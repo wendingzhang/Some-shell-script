@@ -1,0 +1,98 @@
+#!/bin/bash
+
+#add the path of Perl to PATH
+#if [ ! $(echo $PATH | grep "perl") ]; then
+#	read -t 30 -p "Please input the path of /perl_5.20/(such as: /opt ):" perlpath
+#	$(export TMP_AUD_PERL_PATH="$perlpath"/perl_5.20/bin/perl)
+#	$(export PATH="$perlpath"/perl_5.20/bin/:$PATH)
+#	echo yes
+#fi
+
+#add the path of RVCT to PATH
+#if [ ! $(echo $PATH | grep "rvct") ]; then
+#	read -t 30 -p "Please input the path of /2_RVCT/(such as: /usr/bin ):" rvctpath
+#	$(source "$rvctpath"/2_RVCT/rvct22/env.cmd) 
+#	
+#fi
+
+#copy makefile
+cp SIM5300E.config ../../system-build/configs/xmm6260/sim5300.config -f
+cp SIM5300E.ver version.h -f
+#change file diraction
+cd ../../system-build/make
+
+#add authority to HexToFls_E2_Linux
+cd ../../dwdtools/HexToFls/Linux/
+if [ ! $(ls -l | grep HexToFls_E2_Linux | cut -c 2-10 | grep x) ]; then
+	sudo chmod +x HexToFls_E2_Linux
+fi
+cd ../../../system-build/make/
+
+#compile choice
+read -t 30 -p "Please input the compilation type: (DEBUG/CDS/RELEASE) [DEBUG]" comtype
+if [ -z $comtype ]; then
+	comtype="DEBUG"
+fi
+case $comtype in
+	DEBUG)
+		read -t 30 -p "Sure to complete compile?(y/n) [n]" fullcom
+		if [ -z $fullcom ]; then
+			fullcom="n"
+		fi
+		if [ $fullcom == "y" ];then
+			if [ -d ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/MODEM_DEBUG ];then
+				cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+				rm -Rf MODEM_DEBUG/
+				tar -zxf MODEM_DEBUG.tar.gz &> /dev/null
+				cd ../../make
+			else 
+				cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+                                tar -zxf MODEM_DEBUG.tar.gz &> /dev/null
+                                cd ../../make
+			fi				
+		fi
+		make -sr DELIVERY=YES PROJECTNAME=MOD_6255 BUILDMODE=DEBUG PLATFORM=XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_ SWVERSTRING=MOD_6255_1551.00_R18.7 $@
+	;;
+	CDS)
+		read -t 30 -p "Sure to complete compile?(y/n) [n]" fullcom
+		if [ -z $fullcom ]; then
+                        fullcom="n"
+                fi
+                if [ $fullcom == "y" ];then
+                        if [ -d ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/CDS_DEBUG ];then
+                                cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+                                rm -Rf CDS_DEBUG/
+                                tar -zxf CDS_DEBUG.tar.gz &> /dev/null
+                                cd ../../make
+                        else
+                                cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+                                tar -zxf CDS_DEBUG.tar.gz &> /dev/null
+                                cd ../../make
+                        fi
+                fi
+		make -sr DELIVERY=YES INT_STAGE=CDS PROJECTNAME=MOD_6255 BUILDMODE=DEBUG PLATFORM=XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_ SWVERSTRING=MOD_6255_1551.00_R18.7 $@
+	;;
+	RELEASE)
+		read -t 30 -p "Sure to complete compile?(y/n) [n]" fullcom
+                if [ -z $fullcom ]; then
+                        fullcom="n"
+                fi
+		if [ $fullcom == "y" ];then
+                        if [ -d ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/MODEM_RELEASE ];then
+                                cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+                                rm -Rf MODEM_RELEASE/
+                                tar -zxf MODEM_RELEASE.tar.gz &> /dev/null
+                                cd ../../make
+                        else
+                                cd ../HW/XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_/
+                                tar -zxf MODEM_RELEASE.tar.gz &> /dev/null
+                                cd ../../make
+                        fi
+
+                fi
+		make -sr DELIVERY=YES PROJECTNAME=MOD_6255 BUILDMODE=RELEASE PLATFORM=XMM6260_V3_REV_8.1_LARGEBLOCK_NAND_DATACARD_ SWVERSTRING=MOD_6255_1551.00_R18.7 $@
+	;;
+	*)
+	echo "WARNING: Please input right choice!" 
+	;;
+esac

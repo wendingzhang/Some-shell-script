@@ -1,0 +1,18 @@
+#!/bin/sh
+imagepath="./build/tmp-eglibc/deploy/images/9615-cdp" 
+vlinuxpath="./build/tmp-eglibc/sysroots/9615-cdp/kernel"
+sharepath="./yypackage"
+rm -Rf $sharepath
+mkdir $sharepath
+cp $imagepath/msm-9615-cdp-image--ipk-$(date "+%Y%m%d")-9615-cdp.rootfs.yaffs2 $sharepath/system.img
+cp $imagepath/boot-oe-msm9615.img $sharepath/boot.img
+cp $imagepath/boot-oe-msm9615.img $sharepath/boot.img
+cp $imagepath/9615-cdp-usr-image.usrfs.yaffs2 $sharepath/userdata.img
+cp $imagepath/recovery-boot-oe-msm9615.img $sharepath/recovery.img
+cp $imagepath/msm-9615-cdp-recovery-image--ipk-$(date "+%Y%m%d")-9615-cdp.rootfs.yaffs2  $sharepath/recoveryfs.img
+cp $imagepath/appsboot.mbn  $sharepath/appsboot.mbn
+cp $imagepath/update.zip  $sharepath/update.zip
+cp $vlinuxpath/vmlinux  $sharepath/vmlinux
+cp $vlinuxpath/System.map  $sharepath/System.map
+exit 0
+
